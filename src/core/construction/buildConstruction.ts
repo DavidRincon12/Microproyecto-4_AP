@@ -4,6 +4,7 @@ import type { Construction, LanguageSpec, PatternItem } from '../types'
 import { analyze } from './analyze'
 import { AutomatonBuilder } from './builder'
 import { buildBlock, buildGroup, type PieceContext } from './pieces'
+import { andList } from './text'
 
 export function buildConstruction(spec: LanguageSpec): Construction {
   const analysis = analyze(spec)
@@ -55,7 +56,7 @@ export function buildConstruction(spec: LanguageSpec): Construction {
   if (analysis.cleanup.length > 0) {
     b.step(
       'Limpieza y aceptación',
-      `Al terminar el patrón, ${analysis.cleanup.join(' y ')} todavía guardan conteos que ya no se usan. Se vacían sin leer nada y, cuando todas quedan en su fondo, se llega al estado de aceptación.`,
+      `Al terminar el patrón quedan símbolos sobrantes en ${andList(analysis.cleanup)}, porque esos conteos se devolvieron para usarlos otra vez. Se vacían sin leer nada y, cuando quedan en su fondo, se llega al estado de aceptación.`,
       analysis.cleanup,
     )
     b.describe(current, `Aquí se vacían las pilas que sobraron: ${analysis.cleanup.join(', ')}.`)
@@ -76,7 +77,7 @@ export function buildConstruction(spec: LanguageSpec): Construction {
       final,
       null,
       analysis.cleanup.map((stack) => ({ stack, top: `${stack}₀`, push: [`${stack}₀`] })),
-      `Las pilas ${analysis.cleanup.join(' y ')} quedaron en su fondo: llega al estado de aceptación.`,
+      `${analysis.cleanup.length === 1 ? 'La pila' : 'Las pilas'} ${andList(analysis.cleanup)} ${analysis.cleanup.length === 1 ? 'quedó' : 'quedaron'} en su fondo: llega al estado de aceptación.`,
     )
   } else {
     b.step(

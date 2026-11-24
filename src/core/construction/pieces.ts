@@ -4,6 +4,7 @@ import { formatCount, formatPattern } from '../language/pretty'
 import type { BlockItem, GroupItem, LanguageSpec, StackName, StackOp, StateId } from '../types'
 import type { Analysis, Copy } from './analyze'
 import type { AutomatonBuilder } from './builder'
+import { andList, symbolCount } from './text'
 
 export interface PieceContext {
   readonly b: AutomatonBuilder
@@ -96,7 +97,9 @@ function constBlock(ctx: PieceContext, block: BlockItem, entry: StateId, title: 
   )
   let current = entry
   for (let i = 1; i <= k; i++) {
-    const next = b.state(k === 1 ? `Ya leyó la ${s} fija.` : `Ya leyó ${i} de las ${k} ${s} fijas.`)
+    const next = b.state(
+      k === 1 ? `Ya leyó el símbolo fijo ${s}.` : `Ya leyó ${i} de los ${k} símbolos fijos ${s}.`,
+    )
     b.add(current, next, s, [], `Lee ${s}, que es parte fija del patrón.`)
     current = next
   }
@@ -117,12 +120,14 @@ function freeBlock(ctx: PieceContext, block: BlockItem, entry: StateId, title: s
   )
   let current = entry
   for (let i = 1; i <= minimum; i++) {
-    const next = b.state(`Lleva ${i} de las ${minimum} ${s} mínimas de ${blockText(block)}.`)
+    const next = b.state(
+      `Lleva ${i} de los ${minimum} símbolos ${s} mínimos de ${blockText(block)}.`,
+    )
     b.add(current, next, s, [], `Lee ${s}; todavía falta completar el mínimo de ${v}.`)
     current = next
   }
   b.describe(current, `Aquí se pueden seguir leyendo ${s}.`)
-  unit(ctx, current, current, s, c, [], `Lee otra ${s}; ${v} puede crecer libremente.`)
+  unit(ctx, current, current, s, c, [], `Lee otro símbolo ${s}; ${v} puede crecer libremente.`)
   const exit = b.state(`Terminó ${blockText(block)}.`)
   b.add(
     current,
@@ -146,16 +151,17 @@ function defineBlock(
   const { variable: v, factor: c } = block.count
   const s = block.symbol
   const minimum = lowerBound(ctx, v)
-  const tokens = targets.join(' y ')
+  const tokens = andList(targets)
+  const otherTokens = andList(targets.map((t) => `otra ${t}`))
   const purposes = targets
     .map((t) => `${t}: ${ctx.analysis.stacks.find((st) => st.name === t)?.purpose ?? ''}`)
     .join(' ')
   const ops = (variant: Variant) => targets.map((t) => pushOp(t, variant))
   b.step(
     `${title}: define ${v}`,
-    `Cada ${c > 1 ? `grupo de ${c} ` : ''}${s} suma 1 a ${v}, y por cada una se apila ${tokens}. ${purposes}\n${
+    `Cada ${c > 1 ? `grupo de ${c} ` : ''}${s} suma 1 a ${v}, y cada vez ${targets.length > 1 ? 'se apilan' : 'se apila'} ${tokens}. ${purposes}\n${
       minimum > 0
-        ? `Como ${v} ≥ ${minimum}, ${minimum === 1 ? `la primera ${s} se lee` : `las primeras ${minimum} se leen`} con estados en cadena y luego viene un lazo.`
+        ? `Como ${v} ≥ ${minimum}, ${minimum === 1 ? `el primer símbolo ${s} se lee aparte` : `los primeros ${minimum} símbolos ${s} se leen con estados en cadena`} y luego viene un lazo.`
         : `Como ${v} puede ser 0, el lazo está en el mismo estado de entrada y tiene dos variantes: con la pila en el fondo y con la pila ya cargada.`
     }`,
     targets,
@@ -164,8 +170,8 @@ function defineBlock(
   for (let u = 1; u <= minimum; u++) {
     const next = b.state(
       u === minimum
-        ? `Ya contó ${minimum} ${s} (el mínimo de ${v}); aquí sigue contando.`
-        : `Lleva ${u} ${s} contadas para ${v}.`,
+        ? `Ya contó ${symbolCount(minimum, s)} (el mínimo de ${v}); aquí sigue contando.`
+        : `Lleva ${symbolCount(u, s)} ${u === 1 ? 'contado' : 'contados'} para ${v}.`,
     )
     unit(
       ctx,
@@ -175,13 +181,13 @@ function defineBlock(
       c,
       ops(u === 1 ? 'bottom' : 'token'),
       u === 1
-        ? `Lee ${s} con ${targets.map(bottomOf).join(' y ')} en el tope: apila ${tokens}, el primer conteo de ${v}.`
-        : `Lee otra ${s}: apila otra ${tokens}.`,
+        ? `Lee ${s} con ${andList(targets.map(bottomOf))} en el tope: apila ${tokens}, el primer conteo de ${v}.`
+        : `Lee otro símbolo ${s}: apila ${otherTokens}.`,
     )
     current = next
   }
   if (minimum === 0) {
-    b.describe(entry, `Aquí se cuentan las ${s} de ${blockText(block)}.`)
+    b.describe(entry, `Aquí se cuentan los símbolos ${s} de ${blockText(block)}.`)
     unit(
       ctx,
       entry,
@@ -189,10 +195,10 @@ function defineBlock(
       s,
       c,
       ops('bottom'),
-      `Lee la primera ${s}: apila ${tokens} sobre el fondo.`,
+      `Lee el primer símbolo ${s}: apila ${tokens} sobre el fondo.`,
     )
   }
-  unit(ctx, current, current, s, c, ops('token'), `Lee otra ${s}: apila otra ${tokens}.`)
+  unit(ctx, current, current, s, c, ops('token'), `Lee otro símbolo ${s}: apila ${otherTokens}.`)
   const exit = b.state(`Terminó de contar ${v} con ${blockText(block)}.`)
   b.add(current, exit, null, [], `Sin leer nada, termina de contar ${v} y pasa a lo siguiente.`)
   return exit
@@ -211,10 +217,10 @@ function verifyPopBlock(
   const s = block.symbol
   b.step(
     `${title}: verifica ${v}`,
-    `Cada ${c > 1 ? `grupo de ${c} ` : ''}${s} desapila una ${stack}. Al final ${stack} debe quedar en su fondo ${bottomOf(stack)}: así se comprueba que hay exactamente las ${s} que pide ${v}. Es el último uso de ${v}, por eso se desapila.`,
+    `Cada ${c > 1 ? `grupo de ${c} ` : ''}${s} desapila una ${stack}. Al final ${stack} debe quedar en su fondo ${bottomOf(stack)}: así se comprueba que la cantidad de ${s} coincide con ${v}. Es el último uso de ${v}, por eso se desapila.`,
     [stack],
   )
-  b.describe(entry, `Aquí se leen las ${s} de ${blockText(block)} desapilando ${stack}.`)
+  b.describe(entry, `Aquí se leen los símbolos ${s} de ${blockText(block)} desapilando ${stack}.`)
   unit(ctx, entry, entry, s, c, [popOp(stack)], `Lee ${s} y desapila una ${stack}.`)
   const exit = b.state(`Terminó ${blockText(block)}: la cuenta de ${v} coincidió.`)
   b.add(
@@ -222,7 +228,7 @@ function verifyPopBlock(
     exit,
     null,
     [peekBottomOp(stack)],
-    `Sin leer nada, comprueba que ${stack} quedó en su fondo ${bottomOf(stack)}: se leyeron exactamente las ${s} de ${v}.`,
+    `Sin leer nada, comprueba que ${stack} quedó en su fondo ${bottomOf(stack)}: la cantidad de ${s} coincide con ${v}.`,
   )
   return exit
 }
@@ -244,7 +250,10 @@ function verifyTransferBlock(
     `Como ${v} se vuelve a usar, cada ${c > 1 ? `grupo de ${c} ` : ''}${s} pasa una ${stack} de la pila ${stack} a ${aux} en vez de descartarla. Al final ${stack} debe quedar en su fondo ${bottomOf(stack)}: así se comprueba que la cantidad de ${s} coincide con ${v}.`,
     [stack, aux],
   )
-  b.describe(entry, `Aquí se leen las ${s} de ${blockText(block)} pasando ${stack} a ${aux}.`)
+  b.describe(
+    entry,
+    `Aquí se leen los símbolos ${s} de ${blockText(block)} pasando ${stack} a ${aux}.`,
+  )
   unit(
     ctx,
     entry,
@@ -334,7 +343,7 @@ export function buildGroup(ctx: PieceContext, item: number, entry: StateId): Sta
       return `Sin leer nada, descuenta una repetición desapilando una ${R} y empieza otra repetición de ${text}.`
     }
     if (mode === 'c') {
-      return `Sin leer nada, empieza una repetición de ${text} y la cuenta apilando ${info.pushTargets.join(' y ')}${variant === 'bottom' ? ' sobre el fondo' : ''}.`
+      return `Sin leer nada, empieza una repetición de ${text} y la cuenta apilando ${andList(info.pushTargets)}${variant === 'bottom' ? ' sobre el fondo' : ''}.`
     }
     return `Sin leer nada, empieza otra repetición de ${text}.`
   }
@@ -389,7 +398,7 @@ export function buildGroup(ctx: PieceContext, item: number, entry: StateId): Sta
       [R!],
     )
     decision = b.state(
-      `Decide si hay otra repetición de ${text}: depende de si quedan ${R} en la pila.`,
+      `Decide si hay otra repetición de ${text}: depende de si quedan símbolos ${R} en la pila.`,
     )
     b.add(
       current,
