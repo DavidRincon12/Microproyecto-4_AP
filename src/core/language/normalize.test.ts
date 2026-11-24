@@ -110,6 +110,10 @@ describe('parseLanguage', () => {
     expect(errorOf('(a^n b)^k c^n | k >= 0', sigma('a', 'b', 'c'))).toContain('0 veces')
   })
 
+  it('limita el mínimo de repeticiones de un grupo', () => {
+    expect(errorOf('(ab)^k | k >= 11', sigma('a', 'b'))).toContain('10')
+  })
+
   it('limita la longitud del texto', () => {
     expect(errorOf(`a^n ${'b'.repeat(200)}`, sigma('a', 'b'))).toContain('200')
   })

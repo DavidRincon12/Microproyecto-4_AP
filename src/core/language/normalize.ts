@@ -73,6 +73,16 @@ function normalize(ast: LanguageAst, alphabet: Alphabet, source: string): Result
 
   const zeroErrors = checkZeroRepetitionGroups(items, solved.bounds)
   if (zeroErrors.length > 0) return { ok: false, errors: zeroErrors }
+  // Las repeticiones mínimas se construyen desenrolladas, así que se limitan.
+  const tooManyRepetitions = items.some(
+    (item) =>
+      item.kind === 'group' &&
+      item.reps.kind === 'var' &&
+      (solved.bounds.get(item.reps.variable) ?? 0) > MAX_GROUP_UNROLL,
+  )
+  if (tooManyRepetitions) {
+    return fail(`El mínimo de repeticiones de un grupo puede ser hasta ${MAX_GROUP_UNROLL}.`)
+  }
 
   return {
     ok: true,
