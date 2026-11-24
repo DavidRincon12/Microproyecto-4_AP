@@ -49,7 +49,7 @@ Toda la notación sale de `src/core/format.ts`. Si hiciera falta otra (λ en lug
 
 ### 3.1 Alfabeto
 
-Se acepta `0, 1`, `{a, b}`, `Σ = {a, b}` o `a b`. Cada símbolo debe tener un solo carácter, no puede repetirse y no puede ser un carácter reservado de la notación (`( ) { } ^ | : , ; = < > ! + * ε λ`, espacios, superíndices ni subíndices). Se admiten de 1 a 10 símbolos.
+Se acepta `0, 1`, `{a, b}`, `Σ = {a, b}` o `a b`. Cada símbolo debe tener un solo carácter, no puede repetirse y no puede ser un carácter reservado de la notación (`( ) { } ^ | : , ; = < > ! + * ε λ`, espacios, superíndices ni subíndices). Se admiten de 1 a 10 símbolos, y no puede quedar texto después de la llave de cierre.
 
 ### 3.2 Lenguaje
 
@@ -75,7 +75,8 @@ Las validaciones, cada una con mensaje en español y posición en el texto, son:
 - el exponente de un grupo es una sola variable o un número;
 - no hay grupos anidados;
 - las condiciones no se contradicen;
-- el texto tiene como máximo 200 caracteres.
+- el texto tiene como máximo 200 caracteres;
+- los números (exponentes, coeficientes y valores de las condiciones) llegan hasta 100, y la cadena más corta de L no puede pasar de 100 símbolos, que es el máximo de la cadena de prueba.
 
 ### 3.3 Cadena de prueba
 
@@ -222,6 +223,7 @@ La construcción usa un registro de usos por variable (definición, verificacion
 - El exponente de un grupo debe ser una sola variable (no 2n ni sumas). Un grupo con exponente numérico puede repetirse hasta 10 veces, y el mínimo de repeticiones de un grupo también llega hasta 10.
 - Si un grupo puede repetirse 0 veces, las variables que se definen dentro de él no pueden usarse fuera.
 - Los símbolos del alfabeto tienen un solo carácter.
+- Los números del lenguaje llegan hasta 100 y la cadena más corta de L, hasta 100 símbolos. Así el autómata no crece sin control.
 - El autómata no es mínimo en número de estados.
 - La simulación tiene límites de exploración. Con los lenguajes admitidos y cadenas de hasta 100 símbolos no se alcanzan en la práctica.
 
