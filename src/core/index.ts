@@ -4,3 +4,4 @@ export { EPSILON, formatStackOp, formatSymbolSet, formatTransition } from './for
 export { MAX_ALPHABET_SIZE, parseAlphabet } from './alphabet'
 export { MAX_LANGUAGE_LENGTH, parseLanguage } from './language/normalize'
 export { formatPattern } from './language/pretty'
+export { DEFAULT_LIMITS, MAX_INPUT_LENGTH, simulate } from './simulation/simulate'
