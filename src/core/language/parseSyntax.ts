@@ -4,14 +4,7 @@
 import { RESERVED_CHARACTERS } from '../alphabet'
 import type { Result } from '../types'
 import type { AstCondition, AstFactor, ComparisonOp, Expr, LanguageAst, Term } from './ast'
-
-// prettier-ignore
-const SUPERSCRIPTS: Readonly<Record<string, string>> = {
-  '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9',
-  '⁺': '+', 'ⁿ': 'n', 'ᵐ': 'm', 'ᵏ': 'k', 'ⁱ': 'i', 'ʲ': 'j', 'ᵖ': 'p', 'ʳ': 'r', 'ˢ': 's',
-  'ᵗ': 't', 'ᵘ': 'u', 'ᵛ': 'v', 'ʷ': 'w', 'ˣ': 'x', 'ʸ': 'y', 'ᶻ': 'z', 'ᵃ': 'a', 'ᵇ': 'b',
-  'ᶜ': 'c', 'ᵈ': 'd', 'ᵉ': 'e', 'ᶠ': 'f', 'ᵍ': 'g', 'ʰ': 'h', 'ˡ': 'l', 'ᵒ': 'o',
-}
+import { SUPERSCRIPT_TO_PLAIN as SUPERSCRIPTS } from './superscripts'
 
 // prettier-ignore
 const OPERATORS: readonly [string, ComparisonOp][] = [
