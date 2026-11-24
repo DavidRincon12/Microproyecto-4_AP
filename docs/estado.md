@@ -8,7 +8,7 @@
   - construcción por contadores con varias pilas y sus pasos explicados;
   - simulación por búsqueda en anchura;
   - definición formal y ejemplos precargados.
-- Hay 99 pruebas en verde, incluido un oráculo sobre 19 lenguajes.
+- Hay 102 pruebas en verde, incluido un oráculo sobre 19 lenguajes.
 - La interfaz todavía es provisional: solo muestra el título.
 
 ## Último cambio
