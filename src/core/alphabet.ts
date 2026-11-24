@@ -20,6 +20,8 @@ export function parseAlphabet(text: string): Result<Alphabet> {
   if (open !== -1 && text.slice(start, open).trim() === '') {
     const close = text.lastIndexOf('}')
     if (close < open) return fail('Falta cerrar la llave del alfabeto.', open)
+    const extra = text.slice(close + 1).search(/\S/)
+    if (extra !== -1) return fail('Sobra texto después de la llave de cierre.', close + 1 + extra)
     start = open + 1
     end = close
   }

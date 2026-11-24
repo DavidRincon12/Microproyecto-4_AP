@@ -52,6 +52,12 @@ describe('parseAlphabet', () => {
     expect(errorsOf('a b c d e f g h i j k')[0].message).toContain('10')
   })
 
+  it('rechaza texto después de la llave de cierre', () => {
+    const [error] = errorsOf('{a, b} c')
+    expect(error.message).toContain('después')
+    expect(error.position).toBe(7)
+  })
+
   it('rechaza llaves sin cerrar', () => {
     expect(errorsOf('{a, b')[0].message).toContain('llave')
   })
