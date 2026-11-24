@@ -110,6 +110,14 @@ describe('parseLanguage', () => {
     expect(errorOf('(a^n b)^k c^n | k >= 0', sigma('a', 'b', 'c'))).toContain('0 veces')
   })
 
+  it('limita los números del lenguaje para no generar autómatas enormes', () => {
+    expect(errorOf('a^n | n > 100000', sigma('a'))).toContain('100')
+    expect(errorOf('a^1000', sigma('a'))).toContain('100')
+    expect(errorOf('a^(500n)', sigma('a'))).toContain('100')
+    expect(errorOf('a^(50n) b^(50n) | n >= 2', sigma('a', 'b'))).toContain('200')
+    expect(specOf('a^100', sigma('a')).items).toHaveLength(1)
+  })
+
   it('limita el mínimo de repeticiones de un grupo', () => {
     expect(errorOf('(ab)^k | k >= 11', sigma('a', 'b'))).toContain('10')
   })

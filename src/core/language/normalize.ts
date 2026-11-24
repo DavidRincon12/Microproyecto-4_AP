@@ -17,6 +17,8 @@ import { formatCount, formatNormalizedLanguage } from './pretty'
 
 export const MAX_LANGUAGE_LENGTH = 200
 export const MAX_GROUP_UNROLL = 10
+// Las cadenas de prueba tienen hasta 100 símbolos: números mayores solo inflan el autómata.
+export const MAX_NUMBER = 100
 
 const SUPPORTED = 'solo se admiten mínimos (n > 0, n ≥ 1) e igualdades (k = n, m = 2n, n = 3)'
 const OP_TEXT: Record<AstCondition['op'], string> = {
@@ -84,6 +86,13 @@ function normalize(ast: LanguageAst, alphabet: Alphabet, source: string): Result
     return fail(`El mínimo de repeticiones de un grupo puede ser hasta ${MAX_GROUP_UNROLL}.`)
   }
 
+  const shortest = minimumLength(items, solved.bounds)
+  if (shortest > MAX_NUMBER) {
+    return fail(
+      `La cadena más corta de L tendría ${shortest} símbolos, y el máximo para simular es ${MAX_NUMBER}.`,
+    )
+  }
+
   return {
     ok: true,
     value: {
@@ -123,6 +132,21 @@ function checkStructure(ast: LanguageAst, alphabet: Alphabet) {
     }
   }
   visit(ast.factors, 0)
+
+  const tooBig = (expr: Expr | null) => expr?.terms.some((t) => t.coefficient > MAX_NUMBER) ?? false
+  const bigNumber = `Los números del lenguaje pueden ser hasta ${MAX_NUMBER}, porque las cadenas de prueba tienen como máximo ${MAX_NUMBER} símbolos.`
+  const visitNumbers = (factors: readonly AstFactor[]) => {
+    for (const factor of factors) {
+      if (factor.exponent && tooBig(factor.exponent)) {
+        errors.push({ message: bigNumber, position: factor.exponent.position })
+      }
+      if (factor.kind === 'group') visitNumbers(factor.factors)
+    }
+  }
+  visitNumbers(ast.factors)
+  for (const condition of ast.conditions) {
+    if (tooBig(condition.right)) errors.push({ message: bigNumber, position: condition.position })
+  }
 
   for (const condition of ast.conditions) {
     const used = [
@@ -396,4 +420,17 @@ function conditionText(condition: AstCondition): string {
 
 function fail(message: string): Result<never> {
   return { ok: false, errors: [{ message }] }
+}
+
+function minimumLength(items: readonly PatternItem[], bounds: ReadonlyMap<string, number>): number {
+  const minimum = (count: Count) =>
+    count.kind === 'const' ? count.value : count.factor * (bounds.get(count.variable) ?? 0)
+  return items.reduce(
+    (total, item) =>
+      total +
+      (item.kind === 'block'
+        ? minimum(item.count)
+        : minimum(item.reps) * item.body.reduce((sum, block) => sum + minimum(block.count), 0)),
+    0,
+  )
 }
