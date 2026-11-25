@@ -2,30 +2,19 @@
 
 ## Estado actual
 
-- La base del proyecto funciona: Vite, React y TypeScript, con pruebas en Vitest, oxlint, Prettier, reglas de dependencias y CI.
-- El núcleo (`src/core`) está completo:
-  - validación de Σ y L;
-  - construcción por contadores con varias pilas y sus pasos explicados;
-  - simulación por búsqueda en anchura;
-  - definición formal y ejemplos precargados.
-- Hay 102 pruebas en verde, incluido un oráculo sobre 19 lenguajes.
-- La interfaz todavía es provisional: solo muestra el título.
+- El proyecto está completo y cubre RF-01 a RF-12.
+- El núcleo (`src/core`) valida Σ y L, construye el autómata por contadores con varias pilas y explica sus pasos, simula por búsqueda en anchura y genera la definición formal.
+- La interfaz tiene seis pestañas: pasos, definición formal, tabla, diagrama con Graphviz, simulación paso a paso con las pilas e historial en `localStorage`.
+- Hay 128 pruebas en verde (102 del núcleo y 26 de la interfaz), incluido un oráculo sobre 19 lenguajes.
+- Documentos listos: README, documento técnico (núcleo e interfaz) y manual de usuario con capturas.
 
 ## Último cambio
 
-Base del proyecto, núcleo completo y documento técnico (rama `feat/base-proyecto`).
+Interfaz completa (PR #2) y cierre de la documentación para la entrega.
 
 ## Siguiente paso
 
-El integrante 2 construye la interfaz siguiendo `docs/plan-de-trabajo.md`:
-
-- entradas;
-- pasos y definición formal;
-- tabla;
-- diagrama;
-- simulación paso a paso;
-- historial;
-- manual de usuario.
+Ensayar la sustentación y, si la piden en PDF, exportar el documento técnico (`documento-tecnico.md` y `documento-tecnico-interfaz.md`) y el manual.
 
 ## Decisiones vigentes
 
@@ -35,6 +24,6 @@ El integrante 2 construye la interfaz siguiendo `docs/plan-de-trabajo.md`:
 
 ## Pendientes y gotchas
 
-- TypeScript está fijado en 6.0.3: dependency-cruiser no soporta la 7.0 y con ella analiza 0 módulos.
-- La interfaz importa el núcleo solo desde `src/core/index.ts`. Si no, `npm run lint` falla.
-- Los archivos de prueba del núcleo que no necesitan DOM pueden declarar `// @vitest-environment node` para correr más rápido.
+- TypeScript está fijado en 6.0.3: dependency-cruiser no soporta la 7.0.
+- El build avisa que el paquete pesa más de 500 kB, porque incluye Graphviz. Funciona igual; se podría cargar el diagrama con `import()` dinámico.
+- «Descargar SVG» libera el enlace justo después del clic; en Firefox la descarga podría no arrancar.
