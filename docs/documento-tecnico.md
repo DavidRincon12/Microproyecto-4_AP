@@ -2,6 +2,8 @@
 
 Microproyecto 1, Teoría de la Computación (UFPS, 2026-2): software para la construcción y simulación de autómatas a pila.
 
+Autores: David Santiago Rincón Bautista y Ángel Jhoan Díaz Vanegas.
+
 ## 1. Propósito y alcance
 
 El software recibe un alfabeto Σ y un lenguaje L escrito en notación de conjuntos, por ejemplo L = {(0ⁿ1ᵐ)ᵏ : n > 0, m > 1, k = n}. Con eso hace lo siguiente:

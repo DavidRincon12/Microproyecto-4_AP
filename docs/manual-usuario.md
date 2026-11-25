@@ -1,5 +1,7 @@
 # Manual de usuario
 
+Autores: David Santiago Rincón Bautista y Ángel Jhoan Díaz Vanegas.
+
 **Autómatas con pilas** es una aplicación web educativa que, a partir de un alfabeto Σ y un lenguaje L escrito en notación de conjuntos, construye automáticamente un autómata a pila siguiendo el método por contadores de clase, explica cada paso de la construcción, genera su definición formal, tabla y diagrama de transición, y permite simular cadenas paso a paso viendo el estado de cada pila.
 
 ## 1. Requisitos e instalación

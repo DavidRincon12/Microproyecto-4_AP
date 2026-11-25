@@ -88,4 +88,4 @@ docs/           Documento técnico, manual de usuario, plan de trabajo y decisio
 ## Autores
 
 - David Santiago Rincón Bautista
-- Integrante 2
+- Ángel Jhoan Díaz Vanegas
