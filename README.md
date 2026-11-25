@@ -36,6 +36,28 @@ npm run build
 npm run preview
 ```
 
+## Versión de escritorio para Windows
+
+La carpeta `escritorio/` empaqueta la misma aplicación como un ejecutable portable para Windows 10 y 11 de 64 bits. Es un solo archivo, no necesita instalación, funciona sin internet y no requiere Node.js en el equipo donde se usa.
+
+Para usarlo basta con abrir `Automatas-con-pilas.exe`. La primera vez puede tardar unos segundos, mientras se descomprime. Como el ejecutable no está firmado digitalmente, Windows puede mostrar el aviso «Windows protegió su PC»: en ese caso se elige «Más información» y luego «Ejecutar de todas formas». El historial queda guardado en el equipo entre una apertura y otra.
+
+Para generarlo de nuevo (desde Windows, macOS o Linux, con Node.js 22):
+
+```bash
+cd escritorio
+```
+
+```bash
+npm install
+```
+
+```bash
+npm run exe
+```
+
+El archivo queda en `escritorio/salida/Automatas-con-pilas.exe`. Con `npm run abrir` se prueba la versión de escritorio sin generar el ejecutable.
+
 ## Ejemplo rápido
 
 | Campo  | Valor                                  |
