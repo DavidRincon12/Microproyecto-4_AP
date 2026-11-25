@@ -1,5 +1,7 @@
 # Documento técnico de la interfaz
 
+Autores: David Santiago Rincón Bautista y Ángel Jhoan Díaz Vanegas.
+
 Este documento describe la capa de presentación de **Autómatas con pilas** (`src/app/`, `src/features/` y `src/shared/`), complementando el [documento técnico del núcleo](documento-tecnico.md).
 
 ## 1. Estructura y ubicación del estado
