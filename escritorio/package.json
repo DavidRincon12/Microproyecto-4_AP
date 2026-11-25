@@ -9,7 +9,7 @@
   "scripts": {
     "preparar": "npm --prefix .. run build && node -e \"require('fs').rmSync('dist',{recursive:true,force:true});require('fs').cpSync('../dist','dist',{recursive:true})\"",
     "abrir": "npm run preparar && electron .",
-    "exe": "npm run preparar && electron-builder --win portable --x64"
+    "exe": "npm run preparar && electron-builder --win portable --x64 --publish never"
   },
   "build": {
     "appId": "automatas-pila",

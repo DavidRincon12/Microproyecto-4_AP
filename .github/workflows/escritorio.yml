@@ -23,7 +23,7 @@ jobs:
       - run: npm ci
       - run: npm ci
         working-directory: escritorio
-      - run: npm run exe -- -c.win.signAndEditExecutable=true
+      - run: npm run exe -- --config.win.signAndEditExecutable=true
         working-directory: escritorio
       - name: Publicar en Releases
         shell: bash
