@@ -1,0 +1,41 @@
+name: escritorio
+
+# Genera el ejecutable portable para Windows y lo publica en Releases.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Etiqueta de la versión
+        required: true
+        default: v1.0.0
+
+permissions:
+  contents: write
+
+jobs:
+  ejecutable:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm ci
+        working-directory: escritorio
+      - run: npm run exe -- -c.win.signAndEditExecutable=true
+        working-directory: escritorio
+      - name: Publicar en Releases
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          EXE=escritorio/salida/Automatas-con-pilas.exe
+          if gh release view "$VERSION" > /dev/null 2>&1; then
+            gh release upload "$VERSION" "$EXE" --clobber
+          else
+            gh release create "$VERSION" "$EXE" \
+              --title "Autómatas con pilas ${VERSION#v}" \
+              --notes "Ejecutable portable para Windows 10 y 11 de 64 bits. Se abre con doble clic, no requiere instalación ni conexión a internet. Si Windows muestra «Windows protegió su PC», elegir «Más información» y luego «Ejecutar de todas formas»."
+          fi
