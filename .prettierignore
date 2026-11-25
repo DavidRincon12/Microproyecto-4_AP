@@ -2,3 +2,6 @@ dist
 coverage
 node_modules
 package-lock.json
+escritorio/dist
+escritorio/salida
+escritorio/node_modules

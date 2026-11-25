@@ -1,0 +1,38 @@
+{
+  "name": "automatas-pila-escritorio",
+  "productName": "Autómatas con pilas",
+  "version": "1.0.0",
+  "description": "Construcción y simulación de autómatas a pila",
+  "author": "David Santiago Rincón Bautista y Ángel Jhoan Díaz Vanegas",
+  "private": true,
+  "main": "main.cjs",
+  "scripts": {
+    "preparar": "npm --prefix .. run build && node -e \"require('fs').rmSync('dist',{recursive:true,force:true});require('fs').cpSync('../dist','dist',{recursive:true})\"",
+    "abrir": "npm run preparar && electron .",
+    "exe": "npm run preparar && electron-builder --win portable --x64"
+  },
+  "build": {
+    "appId": "automatas-pila",
+    "productName": "Autómatas con pilas",
+    "copyright": "Copyright © 2026 David Santiago Rincón Bautista y Ángel Jhoan Díaz Vanegas",
+    "files": [
+      "main.cjs",
+      "dist/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "output": "salida"
+    },
+    "win": {
+      "target": "portable",
+      "signAndEditExecutable": false
+    },
+    "portable": {
+      "artifactName": "Automatas-con-pilas.exe"
+    }
+  },
+  "devDependencies": {
+    "electron": "45.2.3",
+    "electron-builder": "26.18.1"
+  }
+}

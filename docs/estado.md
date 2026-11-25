@@ -7,6 +7,7 @@
 - La interfaz tiene seis pestañas: pasos, definición formal, tabla, diagrama con Graphviz, simulación paso a paso con las pilas e historial en `localStorage`.
 - Hay 128 pruebas en verde (102 del núcleo y 26 de la interfaz), incluido un oráculo sobre 19 lenguajes.
 - Documentos listos: README, documento técnico (núcleo e interfaz) y manual de usuario con capturas.
+- Versión de escritorio para Windows en `escritorio/` (Electron portable, `npm run exe`).
 
 ## Último cambio
 
